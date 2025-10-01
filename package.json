@@ -1,0 +1,27 @@
+{
+  "name": "odin-inventoryapp",
+  "version": "1.0.0",
+  "description": "Odin project invertory application",
+  "homepage": "https://github.com/PierreGronnier/odin-inventoryApp#readme",
+  "bugs": {
+    "url": "https://github.com/PierreGronnier/odin-inventoryApp/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PierreGronnier/odin-inventoryApp.git"
+  },
+  "license": "ISC",
+  "author": "Pierre Gronnier",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-validator": "^7.2.1",
+    "pg": "^8.16.3"
+  }
+}
