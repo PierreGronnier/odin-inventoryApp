@@ -15,7 +15,7 @@
 }
 
 .navbar-logo {
-  height: 40px;
+  height: 60px;
   margin-right: 20px;
 }
 
@@ -28,10 +28,17 @@
 .navbar-menu li a {
   color: white;
   text-decoration: none;
+  font-size: 1.2rem;
   font-weight: 500;
   transition: color 0.2s;
 }
 
 .navbar-menu li a:hover {
-  color: #00aaff;
+  color: #f9d371;
+}
+
+.navbar-left a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
 }
