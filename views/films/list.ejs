@@ -1,0 +1,17 @@
+<link rel="stylesheet" href="/css/films.css" />
+
+<div class="container">
+  <h1><%= title %></h1>
+  <a href="/films/new" class="button-link">➕ Add a film</a>
+  <ul class="film-list">
+    <% films.forEach(film => { %>
+    <li class="film-item">
+      <% if(film.cover_url){ %>
+      <img src="<%= film.cover_url %>" alt="<%= film.title %> cover" />
+      <% } %>
+      <strong><%= film.title %> (<%= film.release_year %>)</strong>
+      <small>Genres: <%= film.genres.join(", ") %></small>
+    </li>
+    <% }) %>
+  </ul>
+</div>

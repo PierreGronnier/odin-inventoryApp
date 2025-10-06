@@ -1,0 +1,31 @@
+<link rel="stylesheet" href="/css/films.css" />
+
+<div class="container">
+  <h1><%= title %></h1>
+
+  <% if (errors.length > 0) { %>
+  <ul style="color: red">
+    <% errors.forEach(e => { %>
+    <li><%= e.msg %></li>
+    <% }) %>
+  </ul>
+  <% } %>
+
+  <form action="/films/new" method="POST">
+    <input type="text" name="title" placeholder="Title" />
+    <textarea name="description" placeholder="Description"></textarea>
+    <input type="number" name="release_year" placeholder="Release year" />
+    <input type="text" name="director" placeholder="Director" />
+    <input type="number" step="0.01" name="price" placeholder="Price" />
+    <input type="number" name="stock" placeholder="Stock" />
+    <input type="text" name="cover_url" placeholder="Cover URL" />
+
+    <label>Categories:</label>
+    <% categories.forEach(cat => { %>
+    <input type="checkbox" name="categories" value="<%= cat.id %>" /> <%=
+    cat.name %><br />
+    <% }) %>
+
+    <button type="submit">Add film</button>
+  </form>
+</div>

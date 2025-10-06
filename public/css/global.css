@@ -1,0 +1,30 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: "Playfair Display", serif;
+  font-style: normal;
+}
+
+/* Add link buttons */
+.button-link {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 10px 0;
+  background-color: #f9d371;
+  color: #1a1a1a;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.button-link:hover {
+  background-color: #f7c644;
+  transform: scale(1.05);
+}
