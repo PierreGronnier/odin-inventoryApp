@@ -1,0 +1,46 @@
+<link rel="stylesheet" href="/css/filmsDetail.css" />
+<div class="film-container">
+  <header class="film-header">
+    <h1>
+      <%= film.title %>
+      <span class="release-year">(<%= film.release_year %>)</span>
+    </h1>
+  </header>
+
+  <div class="film-content">
+    <% if (film.cover_url) { %>
+    <div class="film-cover">
+      <img
+        src="<%= film.cover_url %>"
+        alt="<%= film.title %> cover"
+        class="cover-image"
+      />
+    </div>
+    <% } %>
+
+    <div class="film-details">
+      <div class="detail-group">
+        <p><strong>Director:</strong> <%= film.director %></p>
+        <p>
+          <strong>Price:</strong> <span class="price">$<%= film.price %></span>
+        </p>
+        <p>
+          <strong>Stock:</strong> <span class="stock"><%= film.stock %></span>
+        </p>
+      </div>
+
+      <div class="description">
+        <h3>Description</h3>
+        <p><%= film.description %></p>
+      </div>
+
+      <div class="genres">
+        <% film.genres.forEach(genre => { %>
+        <span class="genre-tag"><%= genre %></span>
+        <% }) %>
+      </div>
+
+      <a href="/films" class="back-button">Back to Films</a>
+    </div>
+  </div>
+</div>

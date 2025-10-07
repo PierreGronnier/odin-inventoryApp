@@ -1,8 +1,9 @@
 <link rel="stylesheet" href="/css/films.css" />
+<link rel="stylesheet" href="/css/genres.css" />
 
 <div class="container">
-  <h1><%= title %></h1>
-  <a href="/films/new" class="button-link">Add a film</a>
+  <h1>Films in genre: <%= genre.name %></h1>
+  <a href="/genres" class="button-link">Back to genres</a>
 
   <ul class="film-list">
     <% films.forEach(film => { %>

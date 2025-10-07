@@ -1,3 +1,16 @@
+:root {
+  --primary-color: #1a1a1a; /* Noir */
+  --secondary-color: #f9d371; /* Jaune principal */
+  --secondary-hover: #f7c644; /* Jaune au survol */
+  --accent-color: #f0f0f0; /* Gris clair pour les tags/arrière-plans */
+  --light-gray: #f9f9f9; /* Gris très clair */
+  --dark-gray: #333; /* Gris foncé pour le texte */
+  --border-radius: 8px; /* Bordures arrondies */
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Ombre légère */
+  --transition: all 0.3s ease; /* Transition fluide */
+  --site-background: #f7f1e2; /* Fond du site */
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -8,23 +21,34 @@ html,
 body {
   height: 100%;
   font-family: "Playfair Display", serif;
-  font-style: normal;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--site-background);
+  color: var(--dark-gray);
+  line-height: 1.6;
 }
 
-/* Add link buttons */
+main {
+  flex: 1;
+}
+
+.button,
 .button-link {
   display: inline-block;
   padding: 10px 20px;
-  margin: 10px 0;
-  background-color: #f9d371;
-  color: #1a1a1a;
+  margin: 8px 0;
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
   font-weight: 600;
   text-decoration: none;
-  border-radius: 8px;
-  transition: background-color 0.3s, transform 0.2s;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+  border: none;
+  cursor: pointer;
 }
 
+.button:hover,
 .button-link:hover {
-  background-color: #f7c644;
-  transform: scale(1.05);
+  background-color: var(--secondary-hover);
+  transform: scale(1.02);
 }

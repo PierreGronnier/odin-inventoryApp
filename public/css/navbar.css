@@ -1,12 +1,11 @@
-/* navbar.css */
 .navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #1a1a1a;
+  background-color: var(--primary-color);
   padding: 10px 20px;
   color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--box-shadow);
 }
 
 .navbar-left {
@@ -17,6 +16,12 @@
 .navbar-logo {
   height: 60px;
   margin-right: 20px;
+  transition: var(--transition);
+}
+
+.navbar-logo:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 4px var(--secondary-color));
 }
 
 .navbar-menu {
@@ -30,15 +35,16 @@
   text-decoration: none;
   font-size: 1.2rem;
   font-weight: 500;
-  transition: color 0.2s;
+  transition: var(--transition);
 }
 
 .navbar-menu li a:hover {
-  color: #f9d371;
+  color: var(--secondary-color);
 }
 
 .navbar-left a {
   display: flex;
   align-items: center;
   text-decoration: none;
+  color: white;
 }

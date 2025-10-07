@@ -1,0 +1,14 @@
+<link rel="stylesheet" href="/css/genres.css" />
+
+<div class="container">
+  <h1><%= title %></h1>
+  <a href="/genres/new" class="button-link">Add a genre</a>
+
+  <ul class="genre-list">
+    <% genres.forEach(genre => { %>
+    <li class="genre-item">
+      <a href="/genres/<%= genre.id %>"><%= genre.name %></a>
+    </li>
+    <% }) %>
+  </ul>
+</div>

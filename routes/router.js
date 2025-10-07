@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const controller = require("../controllers/controller");
 const filmsController = require("../controllers/filmsController");
-const categoriesController = require("../controllers/categoriesController");
+const genresController = require("../controllers/genresController");
 
 const router = Router();
 
@@ -13,10 +13,12 @@ router.get("/about", controller.aboutGet);
 router.get("/films", filmsController.filmsList);
 router.get("/films/new", filmsController.filmNewGet);
 router.post("/films/new", filmsController.filmNewPost);
+router.get("/films/:id", filmsController.filmDetail);
 
-// Catégories
-router.get("/categories", categoriesController.categoriesList);
-router.get("/categories/new", categoriesController.categoryNewGet);
-router.post("/categories/new", categoriesController.categoryNewPost);
+// Genres
+router.get("/genres", genresController.genresList);
+router.get("/genres/new", genresController.genreNewGet);
+router.post("/genres/new", genresController.genreNewPost);
+router.get("/genres/:id", genresController.genreDetail);
 
 module.exports = router;

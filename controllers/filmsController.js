@@ -1,19 +1,10 @@
-const pool = require("../db/pool");
+const db = require("../db/queries");
 const { body, validationResult } = require("express-validator");
 
 // -------------------- LISTE DES FILMS --------------------
 exports.filmsList = async (req, res) => {
   try {
-    const { rows: films } = await pool.query(`
-        SELECT films.*, 
-               ARRAY_REMOVE(ARRAY_AGG(genres.name), NULL) AS genres
-        FROM films
-        LEFT JOIN film_genres ON films.id = film_genres.film_id
-        LEFT JOIN genres ON genres.id = film_genres.genre_id
-        GROUP BY films.id
-        ORDER BY films.id
-      `);
-
+    const films = await db.getAllFilms();
     res.render("films/list", { title: "Films", films });
   } catch (err) {
     console.error(err);
@@ -23,14 +14,21 @@ exports.filmsList = async (req, res) => {
 
 // -------------------- AJOUT D'UN FILM --------------------
 exports.filmNewGet = async (req, res) => {
-  const { rows: categories } = await pool.query(
-    "SELECT * FROM genres ORDER BY name"
-  );
-  res.render("films/new", { title: "Add a film", categories, errors: [] });
+  try {
+    const genres = await db.getAllGenres();
+    res.render("films/new", {
+      title: "Add a film",
+      genres,
+      errors: [],
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
 };
 
 exports.filmNewPost = [
-  // Validation simple
+  // Validation
   body("title").notEmpty().withMessage("Title is required"),
   body("release_year")
     .isInt({ min: 1800, max: 2100 })
@@ -48,38 +46,31 @@ exports.filmNewPost = [
       price,
       stock,
       cover_url,
-      categories,
+      genres,
     } = req.body;
 
     if (!errors.isEmpty()) {
-      const { rows: allCategories } = await pool.query(
-        "SELECT * FROM genres ORDER BY name"
-      );
+      const allGenres = await db.getAllGenres();
       return res.render("films/new", {
         title: "Add a film",
-        categories: allCategories,
+        genres: allGenres,
         errors: errors.array(),
       });
     }
 
     try {
-      const result = await pool.query(
-        "INSERT INTO films (title, description, release_year, director, price, stock, cover_url) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id",
-        [title, description, release_year, director, price, stock, cover_url]
-      );
+      const filmId = await db.insertFilm({
+        title,
+        description,
+        release_year,
+        director,
+        price,
+        stock,
+        cover_url,
+      });
 
-      const filmId = result.rows[0].id;
-
-      // Insérer les relations film-genre
-      if (categories && categories.length > 0) {
-        const cats = Array.isArray(categories) ? categories : [categories]; // si une seule catégorie
-        for (let catId of cats) {
-          await pool.query(
-            "INSERT INTO film_genres (film_id, genre_id) VALUES ($1,$2)",
-            [filmId, catId]
-          );
-        }
-      }
+      const genreIds = Array.isArray(genres) ? genres : [genres];
+      await db.linkFilmGenres(filmId, genreIds);
 
       res.redirect("/films");
     } catch (err) {
@@ -88,3 +79,22 @@ exports.filmNewPost = [
     }
   },
 ];
+
+// -------------------- DETAIL D'UN FILM --------------------
+exports.filmDetail = async (req, res) => {
+  const filmId = req.params.id; // récupère l'id depuis l'URL
+  try {
+    const film = await db.getFilmById(filmId); // on va créer cette query
+    if (!film) {
+      return res.status(404).send("Film not found");
+    }
+
+    res.render("films/detail", {
+      title: film.title,
+      film,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+};

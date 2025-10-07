@@ -1,22 +1,20 @@
-/* footer.css */
 .footer {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
-  background-color: #1a1a1a;
+  background-color: var(--primary-color);
   color: white;
   padding: 15px 20px;
-  position: fixed;
-  bottom: 0;
   width: 100%;
   box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2);
+  margin-top: auto;
 }
 
 .footer-logo {
   height: 30px;
   filter: invert(100%);
-  transition: transform 0.2s;
+  transition: var(--transition);
 }
 
 .footer-logo:hover {

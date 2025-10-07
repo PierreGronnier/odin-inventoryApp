@@ -7,6 +7,7 @@
 h1 {
   text-align: center;
   margin-bottom: 20px;
+  color: var(--primary-color);
 }
 
 ul.film-list {
@@ -17,57 +18,36 @@ ul.film-list {
   gap: 20px;
 }
 
-.film-item {
-  background-color: #f9f9f9;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
 .film-item img {
   width: 100%;
-  border-radius: 5px;
-  margin-bottom: 10px;
+  height: 300px;
+  object-fit: cover;
 }
 
-.film-item strong {
+.film-info {
+  padding: 10px 15px;
+}
+
+.film-info strong {
   display: block;
   font-size: 1.1rem;
   margin-bottom: 5px;
+  color: var(--primary-color);
 }
 
-.film-item small {
-  color: #555;
+.film-info small {
+  color: var(--dark-gray);
+  display: block;
+  margin-bottom: 5px;
 }
 
-/* Form styling */
-form {
-  max-width: 600px;
-  margin: 20px auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.film-info p {
+  margin: 4px 0;
+  font-size: 0.95rem;
 }
 
-form input,
-form textarea {
-  padding: 8px 10px;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-form button {
-  padding: 10px;
-  font-size: 1rem;
-  background-color: #1a1a1a;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-form button:hover {
-  background-color: #f9d371;
-  color: #1a1a1a;
+.film-item a {
+  color: inherit;
+  text-decoration: none;
+  display: block;
 }
