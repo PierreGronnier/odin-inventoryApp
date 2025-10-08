@@ -2,7 +2,7 @@
 exports.indexGet = async (req, res) => {
   try {
     res.render("index", {
-      title: "Welcome to inventory application",
+      title: "Cine Invetory App",
     });
   } catch (err) {
     console.error("Erreur lors de la récupération des usernames :", err);

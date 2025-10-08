@@ -1,22 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/css/index.css" />
-  </head>
-  <body>
-    <main class="categories-grid">
-        <header class="hero">
-          <h1>Welcome to InventoryApp</h1>
-          <p>Choisissez une catégorie pour explorer votre inventaire</p>
-        </header>
-      
-        <section class="category-cards">
-        </section>
+<title><%= title %></title>
+<link rel="stylesheet" href="/css/global.css" />
+<link rel="stylesheet" href="/css/index.css" />
+<body>
+  <main class="index-container">
+    <header class="hero">
+      <h1>Welcome to Cine Inventory App</h1>
+      <p>Choose a category to explore your inventory</p>
+    </header>
 
-      </main>
-    </main>
-  </body>
-</html>
+    <section class="category-cards">
+      <a href="/films" class="category-card">
+        <div class="card-icon">🎬</div>
+        <div class="card-border-top film-border"></div>
+        <h2>Films</h2>
+        <p>Browse your film collection.</p>
+      </a>
+
+      <a href="/genres" class="category-card">
+        <div class="card-icon">🏷️</div>
+        <div class="card-border-top genre-border"></div>
+        <h2>Genres</h2>
+        <p>Explore films by genre.</p>
+      </a>
+    </section>
+  </main>
+</body>
