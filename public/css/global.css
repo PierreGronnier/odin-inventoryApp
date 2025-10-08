@@ -2,7 +2,7 @@
   --primary-color: #1a1a1a; /* Noir */
   --secondary-color: #f9d371; /* Jaune principal */
   --secondary-hover: #f7c644; /* Jaune au survol */
-  --accent-color: #f0f0f0; /* Gris clair pour les tags/arrière-plans */
+  --accent-color: #faf8f8; /* Gris clair pour les tags/arrière-plans */
   --light-gray: #f9f9f9; /* Gris très clair */
   --dark-gray: #333; /* Gris foncé pour le texte */
   --border-radius: 8px; /* Bordures arrondies */
@@ -34,9 +34,13 @@ main {
 
 .button,
 .button-link {
-  display: inline-block;
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  margin: 20px auto;
   padding: 10px 20px;
-  margin: 8px 0;
+  text-align: center;
+  font-size: 1.3rem;
   background-color: var(--secondary-color);
   color: var(--primary-color);
   font-weight: 600;
@@ -47,7 +51,6 @@ main {
   cursor: pointer;
 }
 
-.button:hover,
 .button-link:hover {
   background-color: var(--secondary-hover);
   transform: scale(1.02);

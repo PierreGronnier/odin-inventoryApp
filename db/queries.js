@@ -87,10 +87,12 @@ async function addGenre(name) {
   );
 }
 
+// -------------------- getGenreById --------------------
 async function getGenreById(id) {
   return pool.query("SELECT * FROM genres WHERE id = $1", [id]);
 }
 
+// -------------------- getFilmsByGenre --------------------
 async function getFilmsByGenre(genreId) {
   return pool.query(
     `

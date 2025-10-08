@@ -82,9 +82,9 @@ exports.filmNewPost = [
 
 // -------------------- DETAIL D'UN FILM --------------------
 exports.filmDetail = async (req, res) => {
-  const filmId = req.params.id; // récupère l'id depuis l'URL
+  const filmId = req.params.id;
   try {
-    const film = await db.getFilmById(filmId); // on va créer cette query
+    const film = await db.getFilmById(filmId);
     if (!film) {
       return res.status(404).send("Film not found");
     }
