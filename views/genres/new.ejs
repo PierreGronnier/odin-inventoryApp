@@ -1,8 +1,6 @@
 <link rel="stylesheet" href="/css/genres.css" />
-
-<div class="container">
+<div class="container form-card">
   <h1><%= title %></h1>
-
   <% if (errors.length > 0) { %>
   <ul style="color: red">
     <% errors.forEach(e => { %>
@@ -10,9 +8,9 @@
     <% }) %>
   </ul>
   <% } %>
-
   <form action="/genres/new" method="POST">
     <input type="text" name="name" placeholder="Genre name" />
     <button type="submit">Add genre</button>
   </form>
 </div>
+<a href="/genres" class="button-link">← Back to genres</a>
