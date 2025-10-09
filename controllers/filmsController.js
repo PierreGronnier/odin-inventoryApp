@@ -5,7 +5,7 @@ const { body, validationResult } = require("express-validator");
 exports.filmsList = async (req, res) => {
   try {
     const films = await db.getAllFilms();
-    res.render("films/list", { title: "Films", films });
+    res.render("films/list", { title: "Films Collection", films });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");

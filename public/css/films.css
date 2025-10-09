@@ -26,11 +26,17 @@ ul.film-list {
   transition: var(--transition);
 }
 
+.film-item:hover {
+  scale: 1.07;
+  border: 3px solid var(--secondary-hover);
+}
+
 .film-item img {
   width: 100%;
   height: 250px;
   object-fit: cover;
   border-radius: var(--border-radius) var(--border-radius) 0 0;
+  border-bottom: 4px solid var(--secondary-hover);
 }
 
 .film-info {
