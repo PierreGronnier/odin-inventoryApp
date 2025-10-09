@@ -14,6 +14,8 @@ router.get("/films", filmsController.filmsList);
 router.get("/films/new", filmsController.filmNewGet);
 router.post("/films/new", filmsController.filmNewPost);
 router.get("/films/:id", filmsController.filmDetail);
+router.get("/films/:id/edit", filmsController.filmEditGet);
+router.post("/films/:id/edit", filmsController.filmEditPost);
 
 // Genres
 router.get("/genres", genresController.genresList);

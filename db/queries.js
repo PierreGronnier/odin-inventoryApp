@@ -59,6 +59,31 @@ async function getFilmById(id) {
   return rows[0];
 }
 
+// -------------------- updateFilm --------------------
+async function updateFilm(
+  id,
+  { title, description, release_year, director, price, stock, cover_url }
+) {
+  await pool.query(
+    `UPDATE films
+     SET title=$1, description=$2, release_year=$3, director=$4, price=$5, stock=$6, cover_url=$7
+     WHERE id=$8`,
+    [title, description, release_year, director, price, stock, cover_url, id]
+  );
+}
+
+// -------------------- updateFilmGenres --------------------
+async function updateFilmGenres(filmId, genreIds) {
+  await pool.query("DELETE FROM film_genres WHERE film_id=$1", [filmId]);
+  if (!genreIds || genreIds.length === 0) return;
+  for (let genreId of genreIds) {
+    await pool.query(
+      "INSERT INTO film_genres (film_id, genre_id) VALUES ($1, $2)",
+      [filmId, genreId]
+    );
+  }
+}
+
 // -------------------- linkFilmGenres --------------------
 async function linkFilmGenres(filmId, genreIds) {
   if (!genreIds || genreIds.length === 0) return;
@@ -115,6 +140,8 @@ module.exports = {
   getAllGenres,
   insertFilm,
   getFilmById,
+  updateFilm,
+  updateFilmGenres,
   // Genres
   linkFilmGenres,
   getAllGenres,

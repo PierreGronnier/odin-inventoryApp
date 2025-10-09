@@ -1,23 +1,41 @@
 <link rel="stylesheet" href="/css/films.css" />
-
 <div class="container">
   <h1><%= title %></h1>
   <a href="/films/new" class="button-link">Add a film</a>
-
   <ul class="film-list">
     <% films.forEach(film => { %>
     <li class="film-item">
-      <a href="/films/<%= film.id %>">
+      <a href="/films/<%= film.id %>" class="film-link">
         <% if(film.cover_url){ %>
-        <img src="<%= film.cover_url %>" alt="<%= film.title %> cover" />
+        <img
+          src="<%= film.cover_url %>"
+          alt="<%= film.title %> cover"
+          class="film-cover"
+        />
         <% } %>
         <div class="film-info">
-          <strong><%= film.title %> (<%= film.release_year %>)</strong>
-          <p>Director: <%= film.director %></p>
-          <p>Price: $<%= film.price %></p>
-          <p>Genres: <%= film.genres.join(", ") %></p>
+          <strong class="film-title"
+            ><%= film.title %> (<%= film.release_year %>)</strong
+          >
+          <div class="film-meta">
+            <span><%= film.director %></span> | <span>$<%= film.price %></span>
+          </div>
+          <p class="film-description"><%= film.description %></p>
+          <div class="film-genres">
+            <% film.genres.forEach(genre => { %>
+            <span class="genre-tag"><%= genre %></span>
+            <% }) %>
+          </div>
         </div>
       </a>
+      <div class="film-actions">
+        <a href="/films/<%= film.id %>/edit" class="action-icon edit">
+          <img src="/img/edit-icon.png" alt="Edit" />
+        </a>
+        <a href="/films/<%= film.id %>/delete" class="action-icon delete">
+          <img src="/img/delete-icon.png" alt="Delete" />
+        </a>
+      </div>
     </li>
     <% }) %>
   </ul>

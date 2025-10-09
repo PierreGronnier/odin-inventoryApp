@@ -19,6 +19,8 @@ exports.filmNewGet = async (req, res) => {
     res.render("films/new", {
       title: "Add a film",
       genres,
+      film: null,
+      editMode: false,
       errors: [],
     });
   } catch (err) {
@@ -54,6 +56,8 @@ exports.filmNewPost = [
       return res.render("films/new", {
         title: "Add a film",
         genres: allGenres,
+        film: null,
+        editMode: false,
         errors: errors.array(),
       });
     }
@@ -98,3 +102,84 @@ exports.filmDetail = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+
+// -------------------- MODIFIER UN FILM --------------------
+exports.filmEditGet = async (req, res) => {
+  const filmId = req.params.id;
+
+  try {
+    const film = await db.getFilmById(filmId);
+    const genres = await db.getAllGenres();
+
+    if (!film) {
+      return res.status(404).send("Film not found");
+    }
+
+    res.render("films/new", {
+      title: "Edit film",
+      film,
+      genres,
+      errors: [],
+      editMode: true,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+};
+
+exports.filmEditPost = [
+  body("title").notEmpty().withMessage("Title is required"),
+  body("release_year")
+    .isInt({ min: 1800, max: 2100 })
+    .withMessage("Invalid year"),
+  body("price").isFloat({ min: 0 }).withMessage("Invalid price"),
+  body("stock").isInt({ min: 0 }).withMessage("Invalid stock"),
+
+  async (req, res) => {
+    const filmId = req.params.id;
+    const errors = validationResult(req);
+    const {
+      title,
+      description,
+      release_year,
+      director,
+      price,
+      stock,
+      cover_url,
+      genres,
+    } = req.body;
+
+    if (!errors.isEmpty()) {
+      const allGenres = await db.getAllGenres();
+      const film = await db.getFilmById(filmId);
+      return res.render("films/new", {
+        title: "Edit film",
+        film,
+        genres: allGenres,
+        errors: errors.array(),
+        editMode: true,
+      });
+    }
+
+    try {
+      await db.updateFilm(filmId, {
+        title,
+        description,
+        release_year,
+        director,
+        price,
+        stock,
+        cover_url,
+      });
+
+      const genreIds = Array.isArray(genres) ? genres : [genres];
+      await db.updateFilmGenres(filmId, genreIds);
+
+      res.redirect(`/films/${filmId}`);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Server error");
+    }
+  },
+];
