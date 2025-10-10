@@ -1,4 +1,7 @@
 <link rel="stylesheet" href="/css/films.css" />
+<% if (typeof flash !== 'undefined' && flash) { %>
+<div class="flash <%= flash.type %>"><%= flash.message %></div>
+<% } %>
 <div class="container">
   <h1><%= title %></h1>
   <a href="/films/new" class="button-link">Add a film</a>
@@ -40,3 +43,15 @@
     <% }) %>
   </ul>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const flash = document.querySelector(".flash");
+    if (flash) {
+      setTimeout(() => {
+        flash.classList.add("hide");
+        setTimeout(() => flash.remove(), 600);
+      }, 3000);
+    }
+  });
+</script>

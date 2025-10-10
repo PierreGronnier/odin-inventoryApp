@@ -5,7 +5,15 @@ const { body, validationResult } = require("express-validator");
 exports.filmsList = async (req, res) => {
   try {
     const films = await db.getAllFilms();
-    res.render("films/list", { title: "Films Collection", films });
+
+    let flash = null;
+    if (req.query.deleted) {
+      flash = {
+        type: "success",
+        message: "Le film a bien été supprimé.",
+      };
+    }
+    res.render("films/list", { title: "Films Collection", films, flash });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
@@ -183,3 +191,36 @@ exports.filmEditPost = [
     }
   },
 ];
+
+// -------------------- SUPPRIMER UN FILM --------------------
+
+exports.filmDeleteGet = async (req, res) => {
+  const filmId = req.params.id;
+  try {
+    const film = await db.getFilmById(filmId);
+    if (!film) return res.status(404).send("Film not found");
+
+    res.render("films/delete", {
+      title: `Delete movies "${film.title}"`,
+      film,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+};
+
+exports.filmDeletePost = async (req, res) => {
+  const filmId = req.params.id;
+  try {
+    const film = await db.getFilmById(filmId);
+    if (!film) return res.redirect("/films");
+
+    await db.deleteFilm(filmId);
+
+    res.redirect("/films?deleted=1");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+};

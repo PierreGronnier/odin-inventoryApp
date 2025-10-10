@@ -1,0 +1,14 @@
+<link rel="stylesheet" href="/css/delete.css" />
+<div class="delete-container">
+  <h1>Delete confirmation</h1>
+  <p>
+    Are you sure you want to delete
+    <strong><%= film.title %></strong> ?
+  </p>
+  <div class="delete-actions">
+    <form action="/films/<%= film.id %>/delete" method="POST">
+      <button type="submit" class="delete-confirm-btn">Yes, delete</button>
+    </form>
+    <a href="/films" class="delete-cancel-btn">Cancel</a>
+  </div>
+</div>

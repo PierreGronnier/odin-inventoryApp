@@ -59,6 +59,12 @@ async function getFilmById(id) {
   return rows[0];
 }
 
+// -------------------- deleteFilm --------------------
+async function deleteFilm(id) {
+  await pool.query("DELETE FROM film_genres WHERE film_id = $1", [id]);
+  await pool.query("DELETE FROM films WHERE id = $1", [id]);
+}
+
 // -------------------- updateFilm --------------------
 async function updateFilm(
   id,
@@ -142,6 +148,7 @@ module.exports = {
   getFilmById,
   updateFilm,
   updateFilmGenres,
+  deleteFilm,
   // Genres
   linkFilmGenres,
   getAllGenres,

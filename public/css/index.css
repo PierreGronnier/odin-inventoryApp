@@ -1,4 +1,3 @@
-/* Animation fadeIn */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -11,31 +10,32 @@
 }
 
 .index-container {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1.2rem;
+  min-height: calc(100vh - 200px);
 }
 
 .hero {
   background-color: var(--secondary-color);
   color: var(--primary-color);
   text-align: center;
-  padding: 4rem 2rem;
+  padding: 2.2rem 1.7rem;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
-  margin-bottom: 3rem;
+  margin-bottom: 2.2rem;
   animation: fadeIn 1s ease-out;
 }
 
 .hero h1 {
   font-family: "Playfair Display", serif;
-  font-size: 3rem;
-  margin-bottom: 1rem;
+  font-size: 2.3rem;
+  margin-bottom: 0.9rem;
   font-weight: 700;
 }
 
 .hero p {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   margin: 0;
   opacity: 0.9;
 }
@@ -43,9 +43,31 @@
 .category-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
+  gap: 1.7rem;
+  margin-top: 1.7rem;
   animation: fadeIn 1s ease-out;
+}
+
+.about-section {
+  margin-top: 2.2rem;
+  animation: fadeIn 1s ease-out;
+}
+
+.about-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background-color: white;
+  padding: 2.2rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  transition: var(--transition);
+  text-decoration: none;
+  color: var(--dark-gray);
+  position: relative;
+  max-width: 550px;
+  margin: 0 auto;
 }
 
 .category-card {
@@ -54,7 +76,7 @@
   align-items: center;
   text-align: center;
   background-color: white;
-  padding: 2rem;
+  padding: 1.7rem;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   transition: var(--transition);
@@ -63,14 +85,15 @@
   position: relative;
 }
 
-.category-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+.category-card:hover,
+.about-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .card-icon {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
+  font-size: 2.2rem;
+  margin-bottom: 0.9rem;
 }
 
 .card-border-top {
@@ -90,14 +113,21 @@
   background-color: var(--secondary-color);
 }
 
-.category-card h2 {
+.about-border {
+  background-color: var(--secondary-color);
+}
+
+.category-card h2,
+.about-card h2 {
   font-family: "Playfair Display", serif;
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
+  font-size: 1.7rem;
+  margin-bottom: 0.9rem;
   color: var(--primary-color);
 }
 
-.category-card p {
+.category-card p,
+.about-card p {
   font-size: 1.1rem;
   opacity: 0.85;
+  margin: 0;
 }
