@@ -66,3 +66,45 @@ exports.genreDetail = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+
+// -------------------- LIST ALL GENRES FOR DELETION --------------------
+exports.genresDeleteListGet = async (req, res) => {
+  try {
+    const genres = await db.getAllGenres();
+    res.render("genres/delete-list", { title: "Delete Genres", genres });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+};
+
+exports.genreDeletePost = async (req, res) => {
+  const genreId = req.params.id;
+
+  try {
+    await db.deleteGenre(genreId);
+    res.redirect("/genres");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+};
+
+// -------------------- CONFIRM DELETE GENRE --------------------
+exports.genreDeleteGet = async (req, res) => {
+  const genreId = req.params.id;
+
+  try {
+    const genreResult = await db.getGenreById(genreId);
+    const genre = genreResult.rows[0];
+
+    if (!genre) {
+      return res.status(404).send("Genre not found");
+    }
+
+    res.render("genres/delete", { title: "Confirm deletion", genre });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+};

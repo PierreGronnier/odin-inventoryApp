@@ -1,0 +1,15 @@
+<link rel="stylesheet" href="/css/genres-delete.css" />
+
+<div class="container delete-page">
+  <h1>Delete a Genre</h1>
+  <a href="/genres" class="back-btn button-link">← Back to genres list</a>
+
+  <div class="genre-delete-grid">
+    <% genres.forEach(genre => { %>
+    <div class="genre-card">
+      <p class="genre-name"><%= genre.name %></p>
+      <a href="/genres/<%= genre.id %>/delete" class="delete-btn">Delete</a>
+    </div>
+    <% }) %>
+  </div>
+</div>

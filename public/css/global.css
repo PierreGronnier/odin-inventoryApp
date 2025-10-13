@@ -9,6 +9,8 @@
   --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Ombre légère */
   --transition: all 0.3s ease; /* Transition fluide */
   --site-background: #f7f1e2; /* Fond du site */
+  --delete-color: #ff4d4d; /* Couleur rouge delete boutton */
+  --delete-hover: #ff0101; /* Couleur rouge delete boutton hover */
 }
 
 * {

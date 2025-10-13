@@ -10,6 +10,37 @@ h1 {
   color: var(--primary-color);
 }
 
+.genre-action-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+  gap: 15px;
+}
+
+.genre-action-group a {
+  display: inline-block;
+  padding: 12px 30px;
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+  white-space: nowrap;
+  width: auto;
+  max-width: none;
+  margin: 0;
+  font-size: 1.1rem;
+  text-align: center;
+  min-width: 200px;
+}
+
+.genre-action-group a:hover {
+  background-color: var(--secondary-hover);
+  transform: scale(1.03);
+}
+
 .genre-grid {
   list-style: none;
   padding: 0;

@@ -1,7 +1,10 @@
 <link rel="stylesheet" href="/css/genres.css" />
 <div class="container">
   <h1><%= title %></h1>
-  <a href="/genres/new" class="button-link">Add a genre</a>
+  <div class="genre-action-group">
+    <a href="/genres/new" class="button-link">Add a genre</a>
+    <a href="/genres/delete" class="button-link">Delete a genre</a>
+  </div>
   <ul class="genre-list genre-grid">
     <% genres.forEach(genre => { %>
     <li class="genre-item">

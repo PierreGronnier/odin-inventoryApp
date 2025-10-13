@@ -40,12 +40,12 @@
   cursor: pointer;
   text-align: center;
   transition: var(--transition);
-  background-color: #ff4d4d;
+  background-color: var(--delete-color);
   color: white;
 }
 
 .delete-confirm-btn:hover {
-  background-color: #ff1a1a;
+  background-color: var(--delete-hover);
   transform: scale(1.03);
 }
 

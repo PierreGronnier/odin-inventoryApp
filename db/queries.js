@@ -140,6 +140,12 @@ async function getFilmsByGenre(genreId) {
   );
 }
 
+// -------------------- deleteGenre --------------------
+async function deleteGenre(id) {
+  await pool.query("DELETE FROM film_genres WHERE genre_id = $1", [id]);
+  await pool.query("DELETE FROM genres WHERE id = $1", [id]);
+}
+
 module.exports = {
   // Films
   getAllFilms,
@@ -155,4 +161,5 @@ module.exports = {
   addGenre,
   getGenreById,
   getFilmsByGenre,
+  deleteGenre,
 };

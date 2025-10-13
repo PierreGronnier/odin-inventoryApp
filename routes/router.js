@@ -23,6 +23,9 @@ router.post("/films/:id/delete", filmsController.filmDeletePost);
 router.get("/genres", genresController.genresList);
 router.get("/genres/new", genresController.genreNewGet);
 router.post("/genres/new", genresController.genreNewPost);
+router.get("/genres/delete", genresController.genresDeleteListGet);
+router.get("/genres/:id/delete", genresController.genreDeleteGet);
+router.post("/genres/:id/delete", genresController.genreDeletePost);
 router.get("/genres/:id", genresController.genreDetail);
 
 module.exports = router;
