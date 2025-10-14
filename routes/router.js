@@ -28,4 +28,8 @@ router.get("/genres/:id/delete", genresController.genreDeleteGet);
 router.post("/genres/:id/delete", genresController.genreDeletePost);
 router.get("/genres/:id", genresController.genreDetail);
 
+// Search
+router.get("/search", controller.searchGet);
+router.post("/search", controller.searchPost);
+
 module.exports = router;

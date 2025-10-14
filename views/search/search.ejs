@@ -1,0 +1,60 @@
+<link rel="stylesheet" href="/css/search.css">
+
+<div class="search-container">
+  <h1><%= title %></h1>
+
+  <div class="search-layout">
+    <div class="form-section">
+      <form action="/search" method="POST" class="search-form">
+        <h3>Filter Films</h3>
+        <input type="text" name="title" placeholder="Title" value="<%= query.title || '' %>">
+        <input type="text" name="director" placeholder="Director" value="<%= query.director || '' %>">
+        
+        <select name="genre_id">
+          <option value="all">All genres</option>
+          <% genres.forEach(g => { %>
+            <option value="<%= g.id %>" <%= query.genre_id == g.id ? 'selected' : '' %>>
+              <%= g.name %>
+            </option>
+          <% }) %>
+        </select>
+
+        <input type="number" name="year" placeholder="Year" value="<%= query.year || '' %>">
+        <input type="number" name="min_price" placeholder="Min price" value="<%= query.min_price || '' %>">
+        <input type="number" name="max_price" placeholder="Max price" value="<%= query.max_price || '' %>">
+        <input type="number" name="min_stock" placeholder="Min stock" value="<%= query.min_stock || '' %>">
+        <input type="number" name="max_stock" placeholder="Max stock" value="<%= query.max_stock || '' %>">
+
+        <button type="submit">Search</button>
+      </form>
+    </div>
+
+    <div class="results-section">
+      <% if (films.length === 0) { %>
+        <p class="no-results">No films found.</p>
+      <% } else { %>
+        <ul class="film-list">
+          <% films.forEach(film => { %>
+            <li class="film-item">
+              <a href="/films/<%= film.id %>" class="film-link">
+                <% if(film.cover_url){ %>
+                  <img src="<%= film.cover_url %>" alt="<%= film.title %> cover" class="film-cover">
+                <% } else { %>
+                  <div class="film-cover placeholder">No image</div>
+                <% } %>
+                <div class="film-info">
+                  <strong class="film-title"><%= film.title %> (<%= film.release_year %>)</strong>
+                  <div class="film-meta">
+                    <span><%= film.director %></span> | <span><%= film.price %>€</span>
+                  </div>
+                  <p class="film-genres">Genres: <%= film.genres.join(', ') %></p>
+                  <p class="film-stock">Stock: <%= film.stock %></p>
+                </div>
+              </a>
+            </li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </div>
+  </div>
+</div>
