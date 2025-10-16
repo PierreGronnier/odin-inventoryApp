@@ -10,6 +10,12 @@
   <% } %>
   <form action="/genres/new" method="POST">
     <input type="text" name="name" placeholder="Genre name" />
+    <input
+      type="password"
+      name="adminPassword"
+      placeholder="Admin password"
+      required
+    />
     <button type="submit">Add</button>
   </form>
 </div>

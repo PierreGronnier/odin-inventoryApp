@@ -20,26 +20,50 @@
   margin-bottom: 30px;
 }
 
+.password-section {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.password-section label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #333;
+}
+
+.password-section input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 250px;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
 .delete-actions {
   display: flex;
-  gap: 20px;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 10px;
 }
 
-.delete-actions form {
-  flex: 1;
-  display: flex;
-}
-
-.delete-confirm-btn {
-  width: 100%;
-  padding: 15px;
+.delete-confirm-btn,
+.delete-cancel-btn {
+  padding: 15px 30px;
+  width: 140px;
   font-weight: 600;
   font-size: 1rem;
   border-radius: var(--border-radius);
   border: none;
   cursor: pointer;
   text-align: center;
+  text-decoration: none;
+  display: inline-block;
   transition: var(--transition);
+}
+
+.delete-confirm-btn {
   background-color: var(--delete-color);
   color: white;
 }
@@ -50,19 +74,8 @@
 }
 
 .delete-cancel-btn {
-  flex: 1;
-  padding: 15px;
-  font-weight: 600;
-  font-size: 1rem;
-  border-radius: var(--border-radius);
-  border: none;
-  cursor: pointer;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
   background-color: var(--secondary-color);
   color: var(--primary-color);
-  transition: var(--transition);
 }
 
 .delete-cancel-btn:hover {

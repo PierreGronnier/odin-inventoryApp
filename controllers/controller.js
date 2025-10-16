@@ -3,24 +3,20 @@ const db = require("../db/queries");
 // -------------------- GET / --------------------
 exports.indexGet = async (req, res) => {
   try {
-    res.render("index", {
-      title: "Cine Invetory App",
-    });
+    res.render("index", { title: "Cine Inventory App" });
   } catch (err) {
-    console.error("Erreur lors de la récupération des usernames :", err);
-    res.status(500).send("Erreur serveur");
+    console.error(err);
+    res.status(500).send("Server error");
   }
 };
 
 // -------------------- GET /about --------------------
 exports.aboutGet = async (req, res) => {
   try {
-    res.render("about", {
-      title: "About page",
-    });
+    res.render("about", { title: "About page" });
   } catch (err) {
-    console.error("Erreur lors de la récupération des usernames :", err);
-    res.status(500).send("Erreur serveur");
+    console.error(err);
+    res.status(500).send("Server error");
   }
 };
 

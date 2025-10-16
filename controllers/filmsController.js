@@ -10,7 +10,7 @@ exports.filmsList = async (req, res) => {
     if (req.query.deleted) {
       flash = {
         type: "success",
-        message: "The movie has been deleted.",
+        message: "Film successfully deleted.",
       };
     }
     res.render("films/list", { title: "Films Collection", films, flash });
@@ -38,7 +38,6 @@ exports.filmNewGet = async (req, res) => {
 };
 
 exports.filmNewPost = [
-  // Validation
   body("title").notEmpty().withMessage("Title is required"),
   body("release_year")
     .isInt({ min: 1800, max: 2100 })
@@ -57,14 +56,44 @@ exports.filmNewPost = [
       stock,
       cover_url,
       genres,
+      adminPassword,
     } = req.body;
+
+    if (adminPassword !== process.env.ADMIN_PASSWORD) {
+      const allGenres = await db.getAllGenres();
+      return res.render("films/new", {
+        title: "Add a film",
+        genres: allGenres,
+        film: {
+          title,
+          description,
+          release_year,
+          director,
+          price,
+          stock,
+          cover_url,
+          genres: genres || [],
+        },
+        editMode: false,
+        errors: [{ msg: "Incorrect admin password" }],
+      });
+    }
 
     if (!errors.isEmpty()) {
       const allGenres = await db.getAllGenres();
       return res.render("films/new", {
         title: "Add a film",
         genres: allGenres,
-        film: null,
+        film: {
+          title,
+          description,
+          release_year,
+          director,
+          price,
+          stock,
+          cover_url,
+          genres: genres || [],
+        },
         editMode: false,
         errors: errors.array(),
       });
@@ -156,14 +185,47 @@ exports.filmEditPost = [
       stock,
       cover_url,
       genres,
+      adminPassword,
     } = req.body;
+
+    if (adminPassword !== process.env.ADMIN_PASSWORD) {
+      const allGenres = await db.getAllGenres();
+      const film = await db.getFilmById(filmId);
+      return res.render("films/new", {
+        title: "Edit film",
+        film: {
+          ...film,
+          title,
+          description,
+          release_year,
+          director,
+          price,
+          stock,
+          cover_url,
+          genres: genres || [],
+        },
+        genres: allGenres,
+        errors: [{ msg: "Incorrect admin password" }],
+        editMode: true,
+      });
+    }
 
     if (!errors.isEmpty()) {
       const allGenres = await db.getAllGenres();
       const film = await db.getFilmById(filmId);
       return res.render("films/new", {
         title: "Edit film",
-        film,
+        film: {
+          ...film,
+          title,
+          description,
+          release_year,
+          director,
+          price,
+          stock,
+          cover_url,
+          genres: genres || [],
+        },
         genres: allGenres,
         errors: errors.array(),
         editMode: true,
@@ -193,7 +255,6 @@ exports.filmEditPost = [
 ];
 
 // -------------------- SUPPRIMER UN FILM --------------------
-
 exports.filmDeleteGet = async (req, res) => {
   const filmId = req.params.id;
   try {
@@ -203,6 +264,7 @@ exports.filmDeleteGet = async (req, res) => {
     res.render("films/delete", {
       title: `Delete movies "${film.title}"`,
       film,
+      errors: [],
     });
   } catch (err) {
     console.error(err);
@@ -212,7 +274,18 @@ exports.filmDeleteGet = async (req, res) => {
 
 exports.filmDeletePost = async (req, res) => {
   const filmId = req.params.id;
+  const { adminPassword } = req.body;
+
   try {
+    if (adminPassword !== process.env.ADMIN_PASSWORD) {
+      const film = await db.getFilmById(filmId);
+      return res.render("films/delete", {
+        title: `Delete movies "${film.title}"`,
+        film,
+        errors: [{ msg: "Incorrect admin password" }],
+      });
+    }
+
     const film = await db.getFilmById(filmId);
     if (!film) return res.redirect("/films");
 

@@ -5,7 +5,15 @@ const { body, validationResult } = require("express-validator");
 exports.genresList = async (req, res) => {
   try {
     const genres = await db.getAllGenres();
-    res.render("genres/list", { title: "Genres", genres });
+    let flash = null;
+    if (req.query.deleted) {
+      flash = {
+        type: "success",
+        message: "Genre successfully deleted.",
+      };
+    }
+
+    res.render("genres/list", { title: "Genres", genres, flash });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
@@ -22,15 +30,26 @@ exports.genreNewPost = [
 
   async (req, res) => {
     const errors = validationResult(req);
+    const { name, adminPassword } = req.body;
+
+    if (adminPassword !== process.env.ADMIN_PASSWORD) {
+      return res.render("genres/new", {
+        title: "Add a genre",
+        genre: { name },
+        errors: [{ msg: "Incorrect admin password" }],
+      });
+    }
+
     if (!errors.isEmpty()) {
       return res.render("genres/new", {
         title: "Add a genre",
+        genre: { name },
         errors: errors.array(),
       });
     }
 
     try {
-      await db.addGenre(req.body.name);
+      await db.addGenre(name);
       res.redirect("/genres");
     } catch (err) {
       console.error(err);
@@ -44,7 +63,6 @@ exports.genreDetail = async (req, res) => {
   const genreId = req.params.id;
 
   try {
-    // Récupère le genre
     const genreResult = await db.getGenreById(genreId);
     const genre = genreResult.rows[0];
 
@@ -52,7 +70,6 @@ exports.genreDetail = async (req, res) => {
       return res.status(404).send("Genre not found");
     }
 
-    // Récupère les films liés à ce genre
     const filmsResult = await db.getFilmsByGenre(genreId);
     const films = filmsResult.rows;
 
@@ -78,19 +95,6 @@ exports.genresDeleteListGet = async (req, res) => {
   }
 };
 
-exports.genreDeletePost = async (req, res) => {
-  const genreId = req.params.id;
-
-  try {
-    await db.deleteGenre(genreId);
-    res.redirect("/genres");
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Server error");
-  }
-};
-
-// -------------------- CONFIRM DELETE GENRE --------------------
 exports.genreDeleteGet = async (req, res) => {
   const genreId = req.params.id;
 
@@ -102,7 +106,34 @@ exports.genreDeleteGet = async (req, res) => {
       return res.status(404).send("Genre not found");
     }
 
-    res.render("genres/delete", { title: "Confirm deletion", genre });
+    res.render("genres/delete", {
+      title: "Confirm deletion",
+      genre,
+      errors: [],
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+};
+
+exports.genreDeletePost = async (req, res) => {
+  const genreId = req.params.id;
+  const { adminPassword } = req.body;
+
+  try {
+    if (adminPassword !== process.env.ADMIN_PASSWORD) {
+      const genreResult = await db.getGenreById(genreId);
+      const genre = genreResult.rows[0];
+      return res.render("genres/delete", {
+        title: "Confirm deletion",
+        genre,
+        errors: [{ msg: "Incorrect admin password" }],
+      });
+    }
+
+    await db.deleteGenre(genreId);
+    res.redirect("/genres?deleted=1");
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");

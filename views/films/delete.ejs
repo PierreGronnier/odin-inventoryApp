@@ -1,14 +1,39 @@
 <link rel="stylesheet" href="/css/delete.css" />
 <div class="delete-container">
   <h1>Delete confirmation</h1>
+  <% if (errors && errors.length > 0) { %>
+  <ul style="color: red">
+    <% errors.forEach(e => { %>
+    <li><%= e.msg %></li>
+    <% }) %>
+  </ul>
+  <% } %>
   <p>
     Are you sure you want to delete
     <strong><%= film.title %></strong> ?
   </p>
-  <div class="delete-actions">
-    <form action="/films/<%= film.id %>/delete" method="POST">
+
+  <form action="/films/<%= film.id %>/delete" method="POST">
+    <div class="password-section">
+      <label for="adminPassword">Admin password required:</label>
+      <input
+        type="password"
+        id="adminPassword"
+        name="adminPassword"
+        placeholder="Enter admin password"
+        required
+      />
+    </div>
+
+    <div class="delete-actions">
       <button type="submit" class="delete-confirm-btn">Yes, delete</button>
-    </form>
-    <a href="/films" class="delete-cancel-btn">Cancel</a>
-  </div>
+      <a
+        href="/films"
+        class="delete-cancel-btn"
+        onclick="if (document.referrer) { event.preventDefault(); window.history.back(); }"
+      >
+        Cancel
+      </a>
+    </div>
+  </form>
 </div>

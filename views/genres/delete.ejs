@@ -2,14 +2,33 @@
 
 <div class="delete-container">
   <h1>Delete confirmation</h1>
+  <% if (errors && errors.length > 0) { %>
+  <ul style="color: red">
+    <% errors.forEach(e => { %>
+    <li><%= e.msg %></li>
+    <% }) %>
+  </ul>
+  <% } %>
   <p>
     Are you sure you want to delete
     <strong><%= genre.name %></strong> ?
   </p>
-  <div class="delete-actions">
-    <form action="/genres/<%= genre.id %>/delete" method="POST">
+
+  <form action="/genres/<%= genre.id %>/delete" method="POST">
+    <div class="password-section">
+      <label for="adminPassword">Admin password required:</label>
+      <input
+        type="password"
+        id="adminPassword"
+        name="adminPassword"
+        placeholder="Enter admin password"
+        required
+      />
+    </div>
+
+    <div class="delete-actions">
       <button type="submit" class="delete-confirm-btn">Yes, delete</button>
-    </form>
-    <a href="/genres/delete" class="delete-cancel-btn">Cancel</a>
-  </div>
+      <a href="/genres/delete" class="delete-cancel-btn">Cancel</a>
+    </div>
+  </form>
 </div>
