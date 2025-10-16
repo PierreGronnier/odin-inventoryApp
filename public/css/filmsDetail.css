@@ -33,10 +33,41 @@
   border-radius: var(--border-radius);
 }
 
-@media (min-width: 768px) {
-  .film-content {
-    flex-direction: row;
-  }
+.film-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 15px;
+  margin-top: auto;
+  gap: 5px;
+}
+
+.action-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.action-icon.edit {
+  background-color: var(--secondary-color);
+}
+
+.action-icon.delete {
+  background-color: #ff4d4d;
+}
+
+.action-icon:hover {
+  transform: scale(1.1);
+  box-shadow: var(--box-shadow);
+}
+
+.action-icon img {
+  width: 25px;
+  height: 25px;
 }
 
 .film-cover {
@@ -141,4 +172,10 @@ main {
   align-items: center;
   flex: 1;
   padding: 2rem 0;
+}
+
+@media (min-width: 768px) {
+  .film-content {
+    flex-direction: row;
+  }
 }

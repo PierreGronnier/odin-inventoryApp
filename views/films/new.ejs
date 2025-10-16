@@ -69,7 +69,10 @@
   </form>
 </div>
 
-<a href="/films" class="button-link">← Back to films</a>
+<a href="/films" class="button-link" onclick="if (document.referrer) { event.preventDefault(); window.history.back(); }">
+  Cancel
+</a>
+
 
 <script>
   new SlimSelect({

@@ -10,7 +10,7 @@ exports.filmsList = async (req, res) => {
     if (req.query.deleted) {
       flash = {
         type: "success",
-        message: "Le film a bien été supprimé.",
+        message: "The movie has been deleted.",
       };
     }
     res.render("films/list", { title: "Films Collection", films, flash });
