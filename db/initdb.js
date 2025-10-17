@@ -33,6 +33,9 @@ async function main() {
   console.log("Initializing database...");
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+    },
   });
 
   try {

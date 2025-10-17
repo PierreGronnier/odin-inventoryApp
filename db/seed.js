@@ -1,4 +1,3 @@
-// db/seed.js
 const { Client } = require("pg");
 require("dotenv").config();
 const { films } = require("./filmsData.js");
@@ -8,11 +7,15 @@ async function seed() {
 
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+    },
   });
 
   try {
     await client.connect();
 
+    // --- Genres ---
     const genresSet = new Set();
     films.forEach((film) => {
       film.genres.forEach((g) => genresSet.add(g));
@@ -28,6 +31,7 @@ async function seed() {
       );
     }
 
+    // --- Films ---
     console.log(`→ Inserting ${films.length} films...`);
     for (const film of films) {
       const result = await client.query(
@@ -64,7 +68,7 @@ async function seed() {
       }
     }
 
-    console.log("✅ data successfully inserted!");
+    console.log("✅ Data successfully inserted!");
   } catch (err) {
     console.error("❌ Error seeding database:", err.message);
   } finally {
