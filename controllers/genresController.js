@@ -63,15 +63,13 @@ exports.genreDetail = async (req, res) => {
   const genreId = req.params.id;
 
   try {
-    const genreResult = await db.getGenreById(genreId);
-    const genre = genreResult.rows[0];
+    const genre = await db.getGenreById(genreId);
 
     if (!genre) {
       return res.status(404).send("Genre not found");
     }
 
-    const filmsResult = await db.getFilmsByGenre(genreId);
-    const films = filmsResult.rows;
+    const films = await db.getFilmsByGenre(genreId);
 
     res.render("genres/detail", {
       title: `Films in ${genre.name}`,
@@ -99,8 +97,7 @@ exports.genreDeleteGet = async (req, res) => {
   const genreId = req.params.id;
 
   try {
-    const genreResult = await db.getGenreById(genreId);
-    const genre = genreResult.rows[0];
+    const genre = await db.getGenreById(genreId);
 
     if (!genre) {
       return res.status(404).send("Genre not found");
@@ -123,8 +120,7 @@ exports.genreDeletePost = async (req, res) => {
 
   try {
     if (adminPassword !== process.env.ADMIN_PASSWORD) {
-      const genreResult = await db.getGenreById(genreId);
-      const genre = genreResult.rows[0];
+      const genre = await db.getGenreById(genreId);
       return res.render("genres/delete", {
         title: "Confirm deletion",
         genre,
