@@ -15,7 +15,7 @@ app.use(expressLayouts);
 app.set("layout", "layout");
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
+console.log("Static files served from:", path.join(__dirname, "public"));
 
 app.use("/", Router);
 
