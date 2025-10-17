@@ -192,31 +192,26 @@ async function searchFilms(filters) {
     values.push(max_stock);
   }
 
-  let whereClause = conditions.length
+  const whereClause = conditions.length
     ? `WHERE ${conditions.join(" AND ")}`
     : "";
 
-  // Sous-requête pour genre
-  let genreJoin = "";
+  let genreCondition = "";
   if (genre_id && genre_id !== "all") {
-    genreJoin = `
-      INNER JOIN (
-        SELECT film_id
-        FROM film_genres
-        WHERE genre_id = $${index++}
-      ) fg_filter ON f.id = fg_filter.film_id
-    `;
+    genreCondition = `AND f.id IN (SELECT film_id FROM film_genres WHERE genre_id = $${index})`;
     values.push(genre_id);
   }
 
   const query = `
-    SELECT f.*, 
-           ARRAY_REMOVE(ARRAY_AGG(g.name), NULL) AS genres
-    FROM films f
-    ${genreJoin}
+    SELECT f.*, ARRAY_REMOVE(ARRAY_AGG(g.name), NULL) AS genres
+    FROM (
+      SELECT *
+      FROM films f
+      ${whereClause}
+    ) f
     LEFT JOIN film_genres fg ON f.id = fg.film_id
     LEFT JOIN genres g ON g.id = fg.genre_id
-    ${whereClause}
+    ${genreCondition}
     GROUP BY f.id
     ORDER BY f.title;
   `;
