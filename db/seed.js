@@ -4,7 +4,7 @@ require("dotenv").config();
 const { films } = require("./filmsData.js");
 
 async function seed() {
-  console.log("🌱 Seeding database with dummy data...");
+  console.log("🌱 Seeding database with data...");
 
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
@@ -64,7 +64,7 @@ async function seed() {
       }
     }
 
-    console.log("✅ Dummy data successfully inserted!");
+    console.log("✅ data successfully inserted!");
   } catch (err) {
     console.error("❌ Error seeding database:", err.message);
   } finally {
