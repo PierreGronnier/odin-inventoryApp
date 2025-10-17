@@ -3,6 +3,8 @@ const controller = require("../controllers/controller");
 const filmsController = require("../controllers/filmsController");
 const genresController = require("../controllers/genresController");
 const debugQueries = require("../db/debugQueries");
+const initdb = require("../db/initdb");
+const seed = require("../db/seed");
 
 const router = Router();
 
@@ -33,23 +35,45 @@ router.get("/genres/:id", genresController.genreDetail);
 router.get("/search", controller.searchGet);
 router.post("/search", controller.searchPost);
 
-// A delete après debug
-router.get("/debug/films/:genreId", async (req, res) => {
+// Admin road
+router.get("/admin/init", async (req, res) => {
+  if (req.query.password !== process.env.ADMIN_PASSWORD) {
+    return res.status(401).send("Unauthorized");
+  }
+
   try {
-    const result = await debugQueries.testFilmsByGenre(req.params.genreId);
-    res.json(result);
+    await initdb();
+    res.send("✅ Database tables initialized!");
   } catch (err) {
-    console.error("Debug error:", err);
-    res.status(500).json({ error: err.message });
+    res.status(500).send("Error: " + err.message);
   }
 });
 
-router.get("/debug/all-films", async (req, res) => {
+router.get("/admin/seed", async (req, res) => {
+  if (req.query.password !== process.env.ADMIN_PASSWORD) {
+    return res.status(401).send("Unauthorized");
+  }
+
   try {
-    const result = await debugQueries.testAllFilms();
-    res.json(result);
+    await seed();
+    res.send("✅ Database seeded!");
   } catch (err) {
-    console.error("Debug error:", err);
+    res.status(500).send("Error: " + err.message);
+  }
+});
+
+router.get("/admin/status", async (req, res) => {
+  try {
+    const db = require("../db/queries");
+    const films = await db.getAllFilms();
+    const genres = await db.getAllGenres();
+
+    res.json({
+      films: films.length,
+      genres: genres.length,
+      status: "OK",
+    });
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });

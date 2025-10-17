@@ -15,7 +15,7 @@
   "type": "commonjs",
   "main": "app.js",
   "scripts": {
-    "postinstall": "npm run initdb",
+    "postinstall": "echo 'No database operations during deployment'",
     "initdb": "node db/initdb.js",
     "seed": "node db/seed.js"
   },

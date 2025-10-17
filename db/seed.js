@@ -3,7 +3,7 @@ require("dotenv").config();
 const { films } = require("./filmsData.js");
 
 async function seed() {
-  console.log("🌱 Seeding database with data...");
+  console.log("🌱 Checking and seeding database with missing data...");
 
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
@@ -15,6 +15,18 @@ async function seed() {
   try {
     await client.connect();
 
+    const { rows: existingFilms } = await client.query(
+      "SELECT COUNT(*) as count FROM films"
+    );
+    const filmCount = parseInt(existingFilms[0].count);
+
+    if (filmCount > 0) {
+      console.log(`📊 Database already has ${filmCount} films. Skipping seed.`);
+      return;
+    }
+
+    console.log("🆕 Database is empty. Starting seed...");
+
     // --- Genres ---
     const genresSet = new Set();
     films.forEach((film) => {
@@ -25,8 +37,7 @@ async function seed() {
     console.log(`→ Inserting ${genres.length} genres...`);
     for (const name of genres) {
       await client.query(
-        `INSERT INTO genres (name) VALUES ($1)
-         ON CONFLICT (name) DO NOTHING;`,
+        `INSERT INTO genres (name) VALUES ($1) ON CONFLICT (name) DO NOTHING;`,
         [name]
       );
     }
@@ -34,22 +45,33 @@ async function seed() {
     // --- Films ---
     console.log(`→ Inserting ${films.length} films...`);
     for (const film of films) {
-      const result = await client.query(
-        `INSERT INTO films (title, description, release_year, director, price, stock, cover_url)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)
-         RETURNING id;`,
-        [
-          film.title,
-          film.description,
-          film.release_year,
-          film.director,
-          parseFloat(film.price),
-          film.stock,
-          film.cover_url,
-        ]
+      const { rows: existing } = await client.query(
+        `SELECT id FROM films WHERE title = $1 AND release_year = $2`,
+        [film.title, film.release_year]
       );
 
-      const filmId = result.rows[0].id;
+      let filmId;
+
+      if (existing.length === 0) {
+        const result = await client.query(
+          `INSERT INTO films (title, description, release_year, director, price, stock, cover_url)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)
+           RETURNING id;`,
+          [
+            film.title,
+            film.description,
+            film.release_year,
+            film.director,
+            parseFloat(film.price),
+            film.stock,
+            film.cover_url,
+          ]
+        );
+        filmId = result.rows[0].id;
+      } else {
+        filmId = existing[0].id;
+        continue;
+      }
 
       for (const genreName of film.genres) {
         const { rows: genreRows } = await client.query(
@@ -68,7 +90,7 @@ async function seed() {
       }
     }
 
-    console.log("✅ Data successfully inserted!");
+    console.log("✅ Seed completed successfully!");
   } catch (err) {
     console.error("❌ Error seeding database:", err.message);
   } finally {
@@ -77,4 +99,8 @@ async function seed() {
   }
 }
 
-seed();
+if (require.main === module) {
+  seed();
+}
+
+module.exports = seed;

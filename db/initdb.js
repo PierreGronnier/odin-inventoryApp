@@ -2,19 +2,13 @@ const { Client } = require("pg");
 require("dotenv").config();
 
 const SQL = `
--- Supprimer les tables si elles existent (dans le bon ordre pour les contraintes)
-DROP TABLE IF EXISTS film_genres CASCADE;
-DROP TABLE IF EXISTS films CASCADE;
-DROP TABLE IF EXISTS genres CASCADE;
-
--- Table des genres
-CREATE TABLE genres (
+-- Créer les tables SEULEMENT si elles n'existent pas
+CREATE TABLE IF NOT EXISTS genres (
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) UNIQUE NOT NULL
 );
 
--- Table des films
-CREATE TABLE films (
+CREATE TABLE IF NOT EXISTS films (
   id SERIAL PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
   description TEXT,
@@ -26,8 +20,7 @@ CREATE TABLE films (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Table de liaison film-genre (relation many-to-many)
-CREATE TABLE film_genres (
+CREATE TABLE IF NOT EXISTS film_genres (
   film_id INT REFERENCES films(id) ON DELETE CASCADE,
   genre_id INT REFERENCES genres(id) ON DELETE CASCADE,
   PRIMARY KEY (film_id, genre_id)
@@ -42,7 +35,7 @@ CREATE INDEX IF NOT EXISTS idx_film_genres_genre_id ON film_genres(genre_id);
 `;
 
 async function main() {
-  console.log("🧨 Nuking and rebuilding database...");
+  console.log("🔧 Setting up database tables (if they don't exist)...");
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
     ssl: {
@@ -53,16 +46,15 @@ async function main() {
   try {
     await client.connect();
     await client.query(SQL);
-    console.log("✅ Database nuked and rebuilt successfully!");
+    console.log("✅ Database tables ready!");
   } catch (err) {
-    console.error("💥 Error nuking database:", err.message);
+    console.error("❌ Error setting up database:", err.message);
     throw err;
   } finally {
     await client.end();
   }
 }
 
-// Exécuter seulement si appelé directement
 if (require.main === module) {
   main();
 }
