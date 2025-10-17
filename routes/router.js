@@ -2,6 +2,7 @@ const { Router } = require("express");
 const controller = require("../controllers/controller");
 const filmsController = require("../controllers/filmsController");
 const genresController = require("../controllers/genresController");
+const debugQueries = require("../db/debugQueries");
 
 const router = Router();
 
@@ -31,5 +32,26 @@ router.get("/genres/:id", genresController.genreDetail);
 // Search
 router.get("/search", controller.searchGet);
 router.post("/search", controller.searchPost);
+
+// A delete après debug
+router.get("/debug/films/:genreId", async (req, res) => {
+  try {
+    const result = await debugQueries.testFilmsByGenre(req.params.genreId);
+    res.json(result);
+  } catch (err) {
+    console.error("Debug error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/debug/all-films", async (req, res) => {
+  try {
+    const result = await debugQueries.testAllFilms();
+    res.json(result);
+  } catch (err) {
+    console.error("Debug error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 module.exports = router;
