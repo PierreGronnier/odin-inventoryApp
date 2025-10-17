@@ -101,15 +101,6 @@ async function linkFilmGenres(filmId, genreIds) {
   }
 }
 
-// -------------------- getAllGenres --------------------
-async function getAllGenres() {
-  const { rows: genres } = await pool.query(`
-      SELECT * FROM genres
-      ORDER BY name
-    `);
-  return genres;
-}
-
 // -------------------- addGenre --------------------
 async function addGenre(name) {
   await pool.query(
@@ -164,31 +155,35 @@ async function searchFilms(filters) {
   let index = 1;
 
   if (title) {
-    conditions.push(`LOWER(f.title) LIKE LOWER($${index++})`);
+    conditions.push(`LOWER(films.title) LIKE LOWER($${index++})`);
     values.push(`%${title}%`);
   }
   if (director) {
-    conditions.push(`LOWER(f.director) LIKE LOWER($${index++})`);
+    conditions.push(`LOWER(films.director) LIKE LOWER($${index++})`);
     values.push(`%${director}%`);
   }
+  if (genre_id && genre_id !== "all") {
+    conditions.push(`film_genres.genre_id = $${index++}`);
+    values.push(genre_id);
+  }
   if (year) {
-    conditions.push(`f.release_year = $${index++}`);
+    conditions.push(`films.release_year = $${index++}`);
     values.push(year);
   }
   if (min_price) {
-    conditions.push(`f.price >= $${index++}`);
+    conditions.push(`films.price >= $${index++}`);
     values.push(min_price);
   }
   if (max_price) {
-    conditions.push(`f.price <= $${index++}`);
+    conditions.push(`films.price <= $${index++}`);
     values.push(max_price);
   }
   if (min_stock) {
-    conditions.push(`f.stock >= $${index++}`);
+    conditions.push(`films.stock >= $${index++}`);
     values.push(min_stock);
   }
   if (max_stock) {
-    conditions.push(`f.stock <= $${index++}`);
+    conditions.push(`films.stock <= $${index++}`);
     values.push(max_stock);
   }
 
@@ -196,24 +191,15 @@ async function searchFilms(filters) {
     ? `WHERE ${conditions.join(" AND ")}`
     : "";
 
-  let genreCondition = "";
-  if (genre_id && genre_id !== "all") {
-    genreCondition = `AND f.id IN (SELECT film_id FROM film_genres WHERE genre_id = $${index})`;
-    values.push(genre_id);
-  }
-
   const query = `
-    SELECT f.*, ARRAY_REMOVE(ARRAY_AGG(g.name), NULL) AS genres
-    FROM (
-      SELECT *
-      FROM films f
-      ${whereClause}
-    ) f
-    LEFT JOIN film_genres fg ON f.id = fg.film_id
-    LEFT JOIN genres g ON g.id = fg.genre_id
-    ${genreCondition}
-    GROUP BY f.id
-    ORDER BY f.title;
+    SELECT DISTINCT films.*, 
+           ARRAY_REMOVE(ARRAY_AGG(genres.name), NULL) AS genres
+    FROM films
+    LEFT JOIN film_genres ON films.id = film_genres.film_id
+    LEFT JOIN genres ON genres.id = film_genres.genre_id
+    ${whereClause}
+    GROUP BY films.id
+    ORDER BY films.title;
   `;
 
   const { rows } = await pool.query(query, values);
@@ -223,7 +209,6 @@ async function searchFilms(filters) {
 module.exports = {
   // Films
   getAllFilms,
-  getAllGenres,
   insertFilm,
   getFilmById,
   updateFilm,
