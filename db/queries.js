@@ -164,51 +164,61 @@ async function searchFilms(filters) {
   let index = 1;
 
   if (title) {
-    conditions.push(`LOWER(films.title) LIKE LOWER($${index++})`);
+    conditions.push(`LOWER(f.title) LIKE LOWER($${index++})`);
     values.push(`%${title}%`);
   }
   if (director) {
-    conditions.push(`LOWER(films.director) LIKE LOWER($${index++})`);
+    conditions.push(`LOWER(f.director) LIKE LOWER($${index++})`);
     values.push(`%${director}%`);
   }
-  if (genre_id && genre_id !== "all") {
-    conditions.push(`film_genres.genre_id = $${index++}`);
-    values.push(genre_id);
-  }
   if (year) {
-    conditions.push(`films.release_year = $${index++}`);
+    conditions.push(`f.release_year = $${index++}`);
     values.push(year);
   }
   if (min_price) {
-    conditions.push(`films.price >= $${index++}`);
+    conditions.push(`f.price >= $${index++}`);
     values.push(min_price);
   }
   if (max_price) {
-    conditions.push(`films.price <= $${index++}`);
+    conditions.push(`f.price <= $${index++}`);
     values.push(max_price);
   }
   if (min_stock) {
-    conditions.push(`films.stock >= $${index++}`);
+    conditions.push(`f.stock >= $${index++}`);
     values.push(min_stock);
   }
   if (max_stock) {
-    conditions.push(`films.stock <= $${index++}`);
+    conditions.push(`f.stock <= $${index++}`);
     values.push(max_stock);
   }
 
-  const whereClause = conditions.length
+  let whereClause = conditions.length
     ? `WHERE ${conditions.join(" AND ")}`
     : "";
 
+  // Sous-requête pour genre
+  let genreJoin = "";
+  if (genre_id && genre_id !== "all") {
+    genreJoin = `
+      INNER JOIN (
+        SELECT film_id
+        FROM film_genres
+        WHERE genre_id = $${index++}
+      ) fg_filter ON f.id = fg_filter.film_id
+    `;
+    values.push(genre_id);
+  }
+
   const query = `
-    SELECT films.*, 
-           ARRAY_REMOVE(ARRAY_AGG(genres.name), NULL) AS genres
-    FROM films
-    LEFT JOIN film_genres ON films.id = film_genres.film_id
-    LEFT JOIN genres ON genres.id = film_genres.genre_id
+    SELECT f.*, 
+           ARRAY_REMOVE(ARRAY_AGG(g.name), NULL) AS genres
+    FROM films f
+    ${genreJoin}
+    LEFT JOIN film_genres fg ON f.id = fg.film_id
+    LEFT JOIN genres g ON g.id = fg.genre_id
     ${whereClause}
-    GROUP BY films.id
-    ORDER BY films.title;
+    GROUP BY f.id
+    ORDER BY f.title;
   `;
 
   const { rows } = await pool.query(query, values);
