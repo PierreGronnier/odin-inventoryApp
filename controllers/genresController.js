@@ -15,7 +15,7 @@ exports.genresList = async (req, res) => {
 
     res.render("genres/list", { title: "Genres", genres, flash });
   } catch (err) {
-    console.error(err);
+    console.error("Error in genresList:", err);
     res.status(500).send("Server error");
   }
 };
@@ -52,7 +52,7 @@ exports.genreNewPost = [
       await db.addGenre(name);
       res.redirect("/genres");
     } catch (err) {
-      console.error(err);
+      console.error("Error in genreNewPost:", err);
       res.status(500).send("Server error");
     }
   },
@@ -71,13 +71,6 @@ exports.genreDetail = async (req, res) => {
 
     const films = await db.getFilmsByGenre(genreId);
 
-    // Debug log
-    console.log(`Genre ${genreId}:`, genre);
-    console.log(`Films count:`, films.length);
-    films.forEach((film, index) => {
-      console.log(`Film ${index + 1}:`, film.title, "Genres:", film.genres);
-    });
-
     res.render("genres/detail", {
       title: `Films in ${genre.name}`,
       genre,
@@ -95,7 +88,7 @@ exports.genresDeleteListGet = async (req, res) => {
     const genres = await db.getAllGenres();
     res.render("genres/delete-list", { title: "Delete Genres", genres });
   } catch (err) {
-    console.error(err);
+    console.error("Error in genresDeleteListGet:", err);
     res.status(500).send("Server error");
   }
 };
@@ -116,7 +109,7 @@ exports.genreDeleteGet = async (req, res) => {
       errors: [],
     });
   } catch (err) {
-    console.error(err);
+    console.error("Error in genreDeleteGet:", err);
     res.status(500).send("Server error");
   }
 };
@@ -138,7 +131,7 @@ exports.genreDeletePost = async (req, res) => {
     await db.deleteGenre(genreId);
     res.redirect("/genres?deleted=1");
   } catch (err) {
-    console.error(err);
+    console.error("Error in genreDeletePost:", err);
     res.status(500).send("Server error");
   }
 };

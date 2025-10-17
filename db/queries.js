@@ -6,14 +6,14 @@ async function getAllFilms() {
     SELECT 
       f.*,
       COALESCE(
-        JSON_AGG(DISTINCT g.name) FILTER (WHERE g.name IS NOT NULL),
+        JSON_AGG(DISTINCT g.name ORDER BY g.name) FILTER (WHERE g.name IS NOT NULL),
         '[]'::JSON
       ) as genres
     FROM films f
     LEFT JOIN film_genres fg ON f.id = fg.film_id
     LEFT JOIN genres g ON fg.genre_id = g.id
     GROUP BY f.id
-    ORDER BY f.id
+    ORDER BY f.title
   `);
   return rows;
 }
@@ -50,7 +50,7 @@ async function getFilmById(id) {
     SELECT 
       f.*,
       COALESCE(
-        JSON_AGG(DISTINCT g.name) FILTER (WHERE g.name IS NOT NULL),
+        JSON_AGG(DISTINCT g.name ORDER BY g.name) FILTER (WHERE g.name IS NOT NULL),
         '[]'::JSON
       ) as genres
     FROM films f
@@ -85,12 +85,15 @@ async function updateFilm(
 
 // -------------------- updateFilmGenres --------------------
 async function updateFilmGenres(filmId, genreIds) {
-  await pool.query("DELETE FROM film_genres WHERE film_id=$1", [filmId]);
+  // Supprimer tous les genres existants
+  await pool.query("DELETE FROM film_genres WHERE film_id = $1", [filmId]);
+
+  // Ajouter les nouveaux genres
   if (!genreIds || genreIds.length === 0) return;
 
   for (let genreId of genreIds) {
     await pool.query(
-      "INSERT INTO film_genres (film_id, genre_id) VALUES ($1, $2)",
+      "INSERT INTO film_genres (film_id, genre_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
       [filmId, genreId]
     );
   }
@@ -102,7 +105,7 @@ async function linkFilmGenres(filmId, genreIds) {
 
   for (let genreId of genreIds) {
     await pool.query(
-      "INSERT INTO film_genres (film_id, genre_id) VALUES ($1, $2)",
+      "INSERT INTO film_genres (film_id, genre_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
       [filmId, genreId]
     );
   }
@@ -110,10 +113,11 @@ async function linkFilmGenres(filmId, genreIds) {
 
 // -------------------- addGenre --------------------
 async function addGenre(name) {
-  await pool.query(
-    "INSERT INTO genres (name) VALUES ($1) ON CONFLICT DO NOTHING",
+  const result = await pool.query(
+    "INSERT INTO genres (name) VALUES ($1) ON CONFLICT (name) DO NOTHING RETURNING id",
     [name]
   );
+  return result.rows[0]?.id;
 }
 
 // -------------------- getGenreById --------------------
@@ -129,7 +133,7 @@ async function getFilmsByGenre(genreId) {
     SELECT 
       f.*,
       COALESCE(
-        JSON_AGG(DISTINCT g.name) FILTER (WHERE g.name IS NOT NULL),
+        JSON_AGG(DISTINCT g.name ORDER BY g.name) FILTER (WHERE g.name IS NOT NULL),
         '[]'::JSON
       ) as genres
     FROM films f
@@ -140,7 +144,7 @@ async function getFilmsByGenre(genreId) {
       WHERE fg2.film_id = f.id AND fg2.genre_id = $1
     )
     GROUP BY f.id
-    ORDER BY f.id
+    ORDER BY f.title
     `,
     [genreId]
   );
@@ -170,7 +174,7 @@ async function searchFilms(filters) {
     SELECT 
       f.*,
       COALESCE(
-        JSON_AGG(DISTINCT g.name) FILTER (WHERE g.name IS NOT NULL),
+        JSON_AGG(DISTINCT g.name ORDER BY g.name) FILTER (WHERE g.name IS NOT NULL),
         '[]'::JSON
       ) as genres
     FROM films f
