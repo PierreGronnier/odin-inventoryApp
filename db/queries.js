@@ -2,32 +2,26 @@ const pool = require("./pool");
 
 // -------------------- getAllFilms --------------------
 async function getAllFilms() {
-  const { rows: films } = await pool.query(`
-    SELECT DISTINCT films.*
-    FROM films
-    ORDER BY films.id
+  const { rows } = await pool.query(`
+    SELECT 
+      f.*,
+      COALESCE(
+        JSON_AGG(DISTINCT g.name) FILTER (WHERE g.name IS NOT NULL),
+        '[]'::JSON
+      ) as genres
+    FROM films f
+    LEFT JOIN film_genres fg ON f.id = fg.film_id
+    LEFT JOIN genres g ON fg.genre_id = g.id
+    GROUP BY f.id
+    ORDER BY f.id
   `);
-
-  for (let film of films) {
-    const { rows: genres } = await pool.query(
-      `SELECT genres.name 
-       FROM genres 
-       JOIN film_genres ON genres.id = film_genres.genre_id 
-       WHERE film_genres.film_id = $1`,
-      [film.id]
-    );
-    film.genres = genres.map((g) => g.name);
-  }
-
-  return films;
+  return rows;
 }
 
 // -------------------- getAllGenres --------------------
 async function getAllGenres() {
-  const { rows: genres } = await pool.query(
-    "SELECT * FROM genres ORDER BY name"
-  );
-  return genres;
+  const { rows } = await pool.query("SELECT * FROM genres ORDER BY name");
+  return rows;
 }
 
 // -------------------- insertFilm --------------------
@@ -51,23 +45,23 @@ async function insertFilm({
 
 // -------------------- GET FILM BY ID --------------------
 async function getFilmById(id) {
-  const { rows } = await pool.query(`SELECT * FROM films WHERE id = $1`, [id]);
-
-  if (rows.length === 0) return null;
-
-  const film = rows[0];
-
-  // Récupérer les genres séparément
-  const { rows: genres } = await pool.query(
-    `SELECT genres.name 
-     FROM genres 
-     JOIN film_genres ON genres.id = film_genres.genre_id 
-     WHERE film_genres.film_id = $1`,
+  const { rows } = await pool.query(
+    `
+    SELECT 
+      f.*,
+      COALESCE(
+        JSON_AGG(DISTINCT g.name) FILTER (WHERE g.name IS NOT NULL),
+        '[]'::JSON
+      ) as genres
+    FROM films f
+    LEFT JOIN film_genres fg ON f.id = fg.film_id
+    LEFT JOIN genres g ON fg.genre_id = g.id
+    WHERE f.id = $1
+    GROUP BY f.id
+    `,
     [id]
   );
-
-  film.genres = genres.map((g) => g.name);
-  return film;
+  return rows[0] || null;
 }
 
 // -------------------- deleteFilm --------------------
@@ -94,24 +88,24 @@ async function updateFilmGenres(filmId, genreIds) {
   await pool.query("DELETE FROM film_genres WHERE film_id=$1", [filmId]);
   if (!genreIds || genreIds.length === 0) return;
 
-  const values = genreIds
-    .map((genreId, index) => `($1, $${index + 2})`)
-    .join(", ");
-
-  const query = `INSERT INTO film_genres (film_id, genre_id) VALUES ${values}`;
-  await pool.query(query, [filmId, ...genreIds]);
+  for (let genreId of genreIds) {
+    await pool.query(
+      "INSERT INTO film_genres (film_id, genre_id) VALUES ($1, $2)",
+      [filmId, genreId]
+    );
+  }
 }
 
 // -------------------- linkFilmGenres --------------------
 async function linkFilmGenres(filmId, genreIds) {
   if (!genreIds || genreIds.length === 0) return;
 
-  const values = genreIds
-    .map((genreId, index) => `($1, $${index + 2})`)
-    .join(", ");
-
-  const query = `INSERT INTO film_genres (film_id, genre_id) VALUES ${values}`;
-  await pool.query(query, [filmId, ...genreIds]);
+  for (let genreId of genreIds) {
+    await pool.query(
+      "INSERT INTO film_genres (film_id, genre_id) VALUES ($1, $2)",
+      [filmId, genreId]
+    );
+  }
 }
 
 // -------------------- addGenre --------------------
@@ -130,27 +124,27 @@ async function getGenreById(id) {
 
 // -------------------- getFilmsByGenre --------------------
 async function getFilmsByGenre(genreId) {
-  const { rows: films } = await pool.query(
-    `SELECT DISTINCT films.*
-     FROM films
-     JOIN film_genres ON films.id = film_genres.film_id
-     WHERE film_genres.genre_id = $1
-     ORDER BY films.id`,
+  const { rows } = await pool.query(
+    `
+    SELECT 
+      f.*,
+      COALESCE(
+        JSON_AGG(DISTINCT g.name) FILTER (WHERE g.name IS NOT NULL),
+        '[]'::JSON
+      ) as genres
+    FROM films f
+    LEFT JOIN film_genres fg ON f.id = fg.film_id
+    LEFT JOIN genres g ON fg.genre_id = g.id
+    WHERE EXISTS (
+      SELECT 1 FROM film_genres fg2 
+      WHERE fg2.film_id = f.id AND fg2.genre_id = $1
+    )
+    GROUP BY f.id
+    ORDER BY f.id
+    `,
     [genreId]
   );
-
-  for (let film of films) {
-    const { rows: genres } = await pool.query(
-      `SELECT genres.name 
-       FROM genres 
-       JOIN film_genres ON genres.id = film_genres.genre_id 
-       WHERE film_genres.film_id = $1`,
-      [film.id]
-    );
-    film.genres = genres.map((g) => g.name);
-  }
-
-  return films;
+  return rows;
 }
 
 // -------------------- deleteGenre --------------------
@@ -173,8 +167,15 @@ async function searchFilms(filters) {
   } = filters;
 
   let baseQuery = `
-    SELECT DISTINCT films.*
-    FROM films
+    SELECT 
+      f.*,
+      COALESCE(
+        JSON_AGG(DISTINCT g.name) FILTER (WHERE g.name IS NOT NULL),
+        '[]'::JSON
+      ) as genres
+    FROM films f
+    LEFT JOIN film_genres fg ON f.id = fg.film_id
+    LEFT JOIN genres g ON fg.genre_id = g.id
   `;
 
   const conditions = [];
@@ -182,61 +183,58 @@ async function searchFilms(filters) {
   let index = 1;
 
   if (genre_id && genre_id !== "all") {
-    baseQuery += ` JOIN film_genres ON films.id = film_genres.film_id`;
-    conditions.push(`film_genres.genre_id = $${index++}`);
+    conditions.push(`EXISTS (
+      SELECT 1 FROM film_genres fg2 
+      WHERE fg2.film_id = f.id AND fg2.genre_id = $${index}
+    )`);
     values.push(genre_id);
+    index++;
   }
 
   if (title) {
-    conditions.push(`LOWER(films.title) LIKE LOWER($${index++})`);
+    conditions.push(`LOWER(f.title) LIKE LOWER($${index})`);
     values.push(`%${title}%`);
+    index++;
   }
   if (director) {
-    conditions.push(`LOWER(films.director) LIKE LOWER($${index++})`);
+    conditions.push(`LOWER(f.director) LIKE LOWER($${index})`);
     values.push(`%${director}%`);
+    index++;
   }
   if (year) {
-    conditions.push(`films.release_year = $${index++}`);
+    conditions.push(`f.release_year = $${index}`);
     values.push(year);
+    index++;
   }
   if (min_price) {
-    conditions.push(`films.price >= $${index++}`);
+    conditions.push(`f.price >= $${index}`);
     values.push(min_price);
+    index++;
   }
   if (max_price) {
-    conditions.push(`films.price <= $${index++}`);
+    conditions.push(`f.price <= $${index}`);
     values.push(max_price);
+    index++;
   }
   if (min_stock) {
-    conditions.push(`films.stock >= $${index++}`);
+    conditions.push(`f.stock >= $${index}`);
     values.push(min_stock);
+    index++;
   }
   if (max_stock) {
-    conditions.push(`films.stock <= $${index++}`);
+    conditions.push(`f.stock <= $${index}`);
     values.push(max_stock);
+    index++;
   }
 
   if (conditions.length > 0) {
     baseQuery += ` WHERE ${conditions.join(" AND ")}`;
   }
 
-  baseQuery += ` ORDER BY films.title`;
+  baseQuery += ` GROUP BY f.id ORDER BY f.title`;
 
-  const { rows: films } = await pool.query(baseQuery, values);
-
-  // Récupérer les genres pour chaque film séparément
-  for (let film of films) {
-    const { rows: genres } = await pool.query(
-      `SELECT genres.name 
-       FROM genres 
-       JOIN film_genres ON genres.id = film_genres.genre_id 
-       WHERE film_genres.film_id = $1`,
-      [film.id]
-    );
-    film.genres = genres.map((g) => g.name);
-  }
-
-  return films;
+  const { rows } = await pool.query(baseQuery, values);
+  return rows;
 }
 
 module.exports = {

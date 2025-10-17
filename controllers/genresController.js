@@ -71,13 +71,20 @@ exports.genreDetail = async (req, res) => {
 
     const films = await db.getFilmsByGenre(genreId);
 
+    // Debug log
+    console.log(`Genre ${genreId}:`, genre);
+    console.log(`Films count:`, films.length);
+    films.forEach((film, index) => {
+      console.log(`Film ${index + 1}:`, film.title, "Genres:", film.genres);
+    });
+
     res.render("genres/detail", {
       title: `Films in ${genre.name}`,
       genre,
       films,
     });
   } catch (err) {
-    console.error(err);
+    console.error("Error in genreDetail:", err);
     res.status(500).send("Server error");
   }
 };
