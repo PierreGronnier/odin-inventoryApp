@@ -2,10 +2,6 @@ const { Client } = require("pg");
 require("dotenv").config();
 
 const SQL = `
-DROP TABLE IF EXISTS film_genres;
-DROP TABLE IF EXISTS films;
-DROP TABLE IF EXISTS genres;
-
 -- Table des genres
 CREATE TABLE IF NOT EXISTS genres (
   id SERIAL PRIMARY KEY,
